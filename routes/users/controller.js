@@ -15,13 +15,13 @@ module.exports = {
     },
     postData: async (req,res) => {
         try {
-            
+
             const hashed = await hashPassword(req.body.password);
             const file   = req.file;
             const result = await Users.create({
                 ...req.body,
                 password:hashed,
-                avatar:file === undefined ? 'assets/no-image.jpg' : file.path
+                avatar:file === undefined ? 'not-found' : file.path
 
             })
             res.status(200).send({
@@ -38,11 +38,28 @@ module.exports = {
         const result = await Users.findOne({email:req.body.email});
         const compared = await comparePass(req.body.password,result.password);
         if(compared){
-            const {firstname,username,email} = result;
-            const token = jwt.sign({firstname,username,email},"hey-tayo",{expiresIn:'60m'});
+            const {_id,username,email} = result;
+            const token = jwt.sign({_id,username,email},"hey-tayo",{expiresIn:'60m'});
             res.status(200).send({token:token})
         }else{
             res.status(200).send('gagal');
         }
-    }
+    },
+    getById:async (req,res)=>{
+        try {
+            const idku = req.params.id;
+            await Users.findOne({_id:idku}, (err,docs) => {
+                if(err){
+                    console.log(err)
+                }
+                res.status(200).send({
+                    data : docs
+                })
+            });
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    },
 }

@@ -16,7 +16,7 @@ const userSchema = new Schema({
     },
     avatar:{
         type:String,
-        default:'assets/no-image.jpg'
+        default:'no-found'
     }
 })
 
